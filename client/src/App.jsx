@@ -1,18 +1,21 @@
 import React from 'react'
 import Navbar from './components/Navbar'
 import Homepage from './pages/Homepage';
-import Gridview from './components/gridview';
+import Gridview from './components/Gridview';
+import Footer from './components/Footer';
+
 
 const App = () => {
   return (
     <>
     <Navbar/>
      <Homepage/>
-     <Gridview/>
-     </>
+      <Gridview/>
+      <Footer></Footer>
+  
    
      
-    
+    </>
       );
     };
     
