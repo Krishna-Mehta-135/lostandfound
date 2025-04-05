@@ -1,66 +1,131 @@
-import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
-const FoundItemModal = ({ isOpen, setIsOpen }) => {
-  if (!isOpen) return null;
-  const [text,setTExt] = useState('');
-  function handleSearch(e){
+export default function FoundItemDialog({ open, setOpen }) {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    itemName: "",
+    description: "",
+    category: "",
+    questions: ["", "", ""],
+  });
+
+  function handleBasicInfoChange(e) {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  function handleQuestionChange(index, value) {
+    const updated = [...formData.questions];
+    updated[index] = value;
+    setFormData({ ...formData, questions: updated });
+  }
+
+  function handleNext(e) {
     e.preventDefault();
-    console.log
+    setStep(2);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    console.log("Final Form Data:", formData);
+    setOpen(false);
+    setStep(1);
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-lg relative">
-        <button
-          onClick={() => setIsOpen(false)}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
-        >
-          ×
-        </button>
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Found Item Details</h2>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-gray-800">Found Item Details</DialogTitle>
+          <DialogDescription className="text-sm text-gray-500">
+            {step === 1
+              ? "Fill in the basic details of the item you’ve found."
+              : "Add follow-up questions to help verify ownership."}
+          </DialogDescription>
+        </DialogHeader>
 
-        {/* Form Fields */}
-        <form className="space-y-4">
-          <div>
-            <label className="block font-medium mb-1">Item Name</label>
-            <input
-              type="text"
-              className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="Enter item name"
-            />
-          </div>
+        <form onSubmit={step === 1 ? handleNext : handleSubmit} className="space-y-4 mt-4">
+          {step === 1 && (
+            <>
+              <div>
+                <label className="block font-medium mb-1">Item Name</label>
+                <input
+                  type="text"
+                  name="itemName"
+                  value={formData.itemName}
+                  onChange={handleBasicInfoChange}
+                  className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Enter item name"
+                  required
+                />
+              </div>
 
-          <div>
-            <label className="block font-medium mb-1">Description</label>
-            <textarea
-              className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="Enter item description"
-              rows={3}
-            ></textarea>
-          </div>
+              <div>
+                <label className="block font-medium mb-1">Description</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleBasicInfoChange}
+                  className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Enter item description"
+                  rows={3}
+                  required
+                ></textarea>
+              </div>
 
-          {/* Categories (can be clickable images later) */}
-          <div>
-            <label className="block font-medium mb-1">Select Category</label>
-            <div className="grid grid-cols-3 gap-2">
-              <button type="button" className="border p-2 rounded hover:bg-orange-100">< img src="brand.png" className='w-16 h-16 mx-auto object-contain'></img></button>
-              <button type="button" className="border p-2 rounded hover:bg-orange-100">< img src="stationary.png" className='w-16 h-16 mx-auto object-contain'></img></button>
-              <button type="button" className="border p-2 rounded hover:bg-orange-100">< img src="responsive.png" className='w-16 h-16 mx-auto object-contain'></img></button>
-              <button type="button" className="border p-2 rounded hover:bg-orange-100">< img src="jewelry.png" className='w-16 h-16 mx-auto object-contain'></img></button>
-              <button type="button" className="border p-2 rounded hover:bg-orange-100">< img src="diet.png" className='w-16 h-16 mx-auto object-contain'></img></button>
-            </div>
-          </div>
+              <div>
+                <label className="block font-medium mb-1">Select Category</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {["brand", "stationary", "responsive", "jewelry", "diet"].map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, category: img })}
+                      className={`border p-2 rounded ${formData.category === img ? "bg-orange-100 border-orange-500" : ""}`}
+                    >
+                      <img src={`/${img}.png`} alt={img} className="w-16 h-16 mx-auto object-contain" />
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          <button
-            type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-md"
-          >
-            Submit
-          </button>
+              <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                Next
+              </Button>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              {[0, 1, 2].map((i) => (
+                <div key={i}>
+                  <label className="block font-medium mb-1">{`Question ${i + 1}`}</label>
+                  <input
+                    type="text"
+                    value={formData.questions[i]}
+                    onChange={(e) => handleQuestionChange(i, e.target.value)}
+                    className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    placeholder={`Enter question ${i + 1}`}
+                    required
+                  />
+                </div>
+              ))}
+
+              <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                Submit
+              </Button>
+            </>
+          )}
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
-};
+}
 
-export default FoundItemModal;
