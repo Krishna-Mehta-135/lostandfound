@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FoundItemDialog from "@/others/FoundItemModal";
+import FoundItemDialog from "@/Modals/FoundItemModal";
 
 const Homepage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

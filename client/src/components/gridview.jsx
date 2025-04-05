@@ -1,46 +1,24 @@
-import React from 'react';
-import ViewDetailsModal from '../others/ViewDetailsModal'; // import the modal component
-
-const items = [
-  {
-    title: 'jewelery',
-    description: 'Brown leather wallet found near cafeteria.',
-    image: 'jewelry.png',
-    email: 'example@mail.com',
-    questions: ['Where did you lose it?', 'Describe the design.']
-  },
-  {
-    title: 'copy',
-    description: 'Blue Milton bottle left in Room 104.',
-    image: 'stationary.png',
-    email: 'example@mail.com',
-    questions: ['What’s written on it?', 'Any subject tags?']
-  },
-  {
-    title: 'earphone',
-    description: 'Maths notes found in the library.',
-    image: 'gadget.png',
-    email: 'example@mail.com',
-    questions: ['What’s the first topic?', 'Page count?']
-  },
-  {
-    title: 'water bottle',
-    description: 'Student ID card picked up near parking.',
-    image: 'diet.png',
-    email: 'example@mail.com',
-    questions: ['Name on the ID?', 'Department?']
-  },
-  {
-    title: 'Wallet',
-    description: 'Black fast charger found in lab.',
-    image: 'brand.png',
-    email: 'example@mail.com',
-    questions: ['Charger brand?', 'Any marks/stickers?']
-  },
-  // Add more objects as needed...
-];
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import ViewDetailsModal from '../Modals/ViewDetailsModal';
 
 const Gridview = () => {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    // Fetch data from backend when component mounts
+    const fetchItems = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/found");
+        setItems(res.data); // res.data is the array of items
+      } catch (err) {
+        console.error("Failed to fetch items:", err);
+      }
+    };
+
+    fetchItems();
+  }, []);
+
   return (
     <div className="p-6 bg-gray-100 min-h-[70vh]">
       <h2 className="text-3xl font-bold mb-6 text-center text-[#284B63]">Lost Items</h2>
@@ -51,14 +29,13 @@ const Gridview = () => {
             key={index}
             className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-2xl hover:scale-105"
           >
-            {/* Icon-like image */}
             <img
-              src={item.image}
-              alt={item.title}
+              src={`/${getImageByCategory(item.category)}`} // Dynamically set image based on category
+              alt={item.itemType}
               className="w-16 h-16 object-cover rounded-sm mb-4 border-2 border-[#284B63]"
             />
 
-            <h3 className="text-xl font-semibold text-[#284B63]">{item.title}</h3>
+            <h3 className="text-xl font-semibold text-[#284B63]">{item.itemType}</h3>
             <p className="mt-2 text-gray-700">{item.description}</p>
 
             <div className="mt-4">
@@ -70,5 +47,17 @@ const Gridview = () => {
     </div>
   );
 };
+
+// Helper to choose image by category
+function getImageByCategory(category) {
+  const map = {
+    Jewelry: "jewelry.png",
+    Stationary: "stationary.png",
+    Electronics: "gadget.png",
+    Clothes: "brand.png",
+    "Bottles&Tiffin": "diet.png",
+  };
+  return map[category] || "default.png";
+}
 
 export default Gridview;
