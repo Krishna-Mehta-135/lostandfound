@@ -25,13 +25,46 @@ export const getAllFoundItems = asyncHandler(async (req, res) => {
 });
 
 const createFoundItem = asyncHandler(async (req, res) => {
-    const newItem = await FoundItem.create({
-        itemType,
-        description,
-        category,
-        questions,
-        finderEmail,
-    });
+    try {
+        const {itemType, description, category, finderName, finderPhone, finderEmail, verificationQuestions} = req.body;
+
+        // Validate required fields
+        if (
+            !itemType ||
+            !description ||
+            !category ||
+            !finderName ||
+            !finderPhone ||
+            !finderEmail ||
+            !Array.isArray(verificationQuestions) ||
+            verificationQuestions.length < 3 ||
+            verificationQuestions.length > 5
+        ) {
+            return res
+            .status(400)
+            .json(
+                new ApiResponse(400, null, "All fields are required and 3 to 5 verification questions must be provided")
+            );
+        }
+
+        // Format the questions to match schema
+        const formattedQuestions = verificationQuestions.map((q) => ({question: q}));
+
+        const newItem = await FoundItem.create({
+            itemType,
+            description,
+            category,
+            finderName,
+            finderPhone,
+            finderEmail,
+            verificationQuestions: formattedQuestions,
+        });
+
+        return res.status(201).json(new ApiResponse(201, newItem, "Found item created successfully"));
+    } catch (error) {
+        console.error("Error creating found item:", error.message);
+        return res.status(500).json(new ApiResponse(500, null, "Failed to create found item"));
+    }
 });
 
 const verifyAnswers = asyncHandler(async (req, res) => {});
