@@ -6,10 +6,6 @@ const verificationQuestionSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        answer: {
-            type: String,
-            required: true,
-        },
     },
     {_id: false}
 );
@@ -24,6 +20,11 @@ const foundItemSchema = new mongoose.Schema(
         description: {
             type: String,
             required: true,
+        },
+        category: {
+            type: String,
+            required: true,
+            enum: ["Jewelry", "Clothes", "Electronics", "Stationary", "Bottles&Tiffin"]
         },
         finderName: {
             type: String,
