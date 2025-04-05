@@ -9,4 +9,6 @@ app.use(express.json())
 
 //Routes
 
+app.use("/api/v1/foundItems" , ItemsRouter)
+
 export {app}
