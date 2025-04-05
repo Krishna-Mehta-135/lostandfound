@@ -33,6 +33,10 @@ const foundItemSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        finderEmail: {
+            type : String,
+            required : true
+        },
         verificationQuestions: {
             type: [verificationQuestionSchema],
 
