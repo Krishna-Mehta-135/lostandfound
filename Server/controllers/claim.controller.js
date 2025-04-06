@@ -69,7 +69,7 @@ export const approveClaim = asyncHandler(async (req, res) => {
         "Claim Approved – Lost & Found",
         `Hi ${claim.claimantName},
 
-Your claim for the item "${item.itemName}" has been approved!
+Your claim for the item "${item.itemType}" has been approved!
 
 Here are the finder's contact details:
 
@@ -89,27 +89,34 @@ Please get in touch with them to retrieve your item.
 export const rejectClaim = asyncHandler(async (req, res) => {
     const { claimId } = req.params;
 
+    // Step 1: Find the claim
     const claim = await Claim.findById(claimId);
     if (!claim) {
         return res.status(404).json(new ApiResponse(404, null, "Claim not found"));
     }
 
+    // Step 2: Get the associated item
     const item = await FoundItem.findById(claim.itemId);
 
+    // Step 3: Prepare and send rejection email
     await sendEmail(
         claim.claimantEmail,
         "Claim Rejected – Lost & Found",
         `Hi ${claim.claimantName},
 
-Unfortunately, your claim for the item "${item?.itemName ?? "Unknown"}" has been rejected by the finder.
+Thank you for submitting your claim for the item "${item?.itemType ?? "Unknown"}".
 
-This usually means the answers provided didn’t match what the finder expected.
+After reviewing your answers, the finder was unable to confirm a match, so your claim has been declined.
+
+You're welcome to continue browsing the Lost & Found board in case someone else has reported your item.
 
 – Team Lost & Found`
     );
 
+    // Step 4: Update claim status to rejected
     claim.status = "rejected";
     await claim.save();
 
+    // Step 5: Respond to client
     return res.status(200).json(new ApiResponse(200, null, "Claim rejected and email sent."));
 });
