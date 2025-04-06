@@ -1,20 +1,36 @@
+import dotenv from "dotenv";
+dotenv.config(); // Load .env variables first
+
 import nodemailer from "nodemailer";
 
+// Trim credentials
+const user = process.env.SMTP_USER?.trim();
+const pass = process.env.SMTP_PASS?.trim();
+
+// Create transporter
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT),
+    secure: true, // Use true if you're on port 465
     auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user,
+        pass,
     },
 });
 
-const sendEmail = async (to, subject, text) => {
-    await transporter.sendMail({
-        from: `"Lost & Found" <${process.env.MAIL_USER}>`,
-        to,
-        subject,
-        text,
-    });
+// Reusable email sender function
+export const sendEmail = async (to, subject, text) => {
+    try {
+        const info = await transporter.sendMail({
+            from: `"Lost & Found" <${user}>`,
+            to,
+            subject,
+            text,
+        });
+
+    } catch (error) {
+        throw error;
+    }
 };
 
-export default sendEmail;
+export default transporter;
