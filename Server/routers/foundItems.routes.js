@@ -4,6 +4,6 @@ import { createFoundItem, getAllFoundItems } from "../controllers/itemController
 const itemsRouter = Router()
 
 itemsRouter.route("/").get(getAllFoundItems)
-itemsRouter.route("/").post(createFoundItem)
+itemsRouter.route("/create").post(createFoundItem)
 
 export {itemsRouter}
