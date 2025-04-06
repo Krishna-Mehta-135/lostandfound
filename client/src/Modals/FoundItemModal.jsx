@@ -8,8 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
-import { toast } from "sonner"; 
-
+import { toast } from "sonner";
 
 export default function FoundItemDialog({ open, setOpen }) {
   const [step, setStep] = useState(1);
@@ -18,6 +17,9 @@ export default function FoundItemDialog({ open, setOpen }) {
     description: "",
     category: "",
     questions: ["", "", ""],
+    finderName: "",
+    finderPhone: "",
+    finderEmail: "",
   });
 
   function handleBasicInfoChange(e) {
@@ -32,35 +34,36 @@ export default function FoundItemDialog({ open, setOpen }) {
 
   function handleNext(e) {
     e.preventDefault();
-    setStep(2);
+    setStep((prev) => prev + 1);
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-  
+
     const payload = {
       itemType: formData.itemName,
       description: formData.description,
       category: formData.category,
-      finderName: "Ritesh Hooda", 
-      finderPhone: "9876543210",
-      finderEmail: "ritesh@example.com",
+      finderName: formData.finderName,
+      finderPhone: formData.finderPhone,
+      finderEmail: formData.finderEmail,
       verificationQuestions: formData.questions,
     };
-  
+
     try {
       const res = await axios.post("http://localhost:5000/api/v1/foundItems/create", payload);
-  
+
       if (res.status === 201) {
         toast.success("Item submitted successfully!");
-  
         setFormData({
           itemName: "",
           description: "",
           category: "",
           questions: ["", "", ""],
+          finderName: "",
+          finderPhone: "",
+          finderEmail: "",
         });
-  
         setStep(1);
         setOpen(false);
       }
@@ -69,7 +72,6 @@ export default function FoundItemDialog({ open, setOpen }) {
       toast.error(error?.response?.data?.message || "Failed to submit item");
     }
   }
-  
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -77,13 +79,13 @@ export default function FoundItemDialog({ open, setOpen }) {
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-800">Found Item Details</DialogTitle>
           <DialogDescription className="text-sm text-gray-500">
-            {step === 1
-              ? "Fill in the basic details of the item you’ve found."
-              : "Add follow-up questions to help verify ownership."}
+            {step === 1 && "Fill in the basic details of the item you’ve found."}
+            {step === 2 && "Add follow-up questions to help verify ownership."}
+            {step === 3 && "Provide your contact details in case someone needs to reach you."}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={step === 1 ? handleNext : handleSubmit} className="space-y-4 mt-4">
+        <form onSubmit={step === 3 ? handleSubmit : handleNext} className="space-y-4 mt-4">
           {step === 1 && (
             <>
               <div>
@@ -115,7 +117,7 @@ export default function FoundItemDialog({ open, setOpen }) {
               <div>
                 <label className="block font-medium mb-1">Select Category</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {["brand", "stationary", "gadget", "jewelry", "diet"].map((img, idx) => (
+                  {["Clothes", "Stationary", "Electronics", "Jewelry", "Bottles&Tiffin"].map((img, idx) => (
                     <button
                       key={idx}
                       type="button"
@@ -151,6 +153,53 @@ export default function FoundItemDialog({ open, setOpen }) {
               ))}
 
               <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                Next
+              </Button>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              <div>
+                <label className="block font-medium mb-1">Your Name</label>
+                <input
+                  type="text"
+                  name="finderName"
+                  value={formData.finderName}
+                  onChange={handleBasicInfoChange}
+                  className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Enter your name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  name="finderPhone"
+                  value={formData.finderPhone}
+                  onChange={handleBasicInfoChange}
+                  className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Enter your phone number"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium mb-1">Email</label>
+                <input
+                  type="email"
+                  name="finderEmail"
+                  value={formData.finderEmail}
+                  onChange={handleBasicInfoChange}
+                  className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+
+              <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">
                 Submit
               </Button>
             </>
@@ -160,4 +209,3 @@ export default function FoundItemDialog({ open, setOpen }) {
     </Dialog>
   );
 }
-
