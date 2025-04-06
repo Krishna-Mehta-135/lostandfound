@@ -7,6 +7,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner"; // Optional, for feedback messages
+
 
 export default function FoundItemDialog({ open, setOpen }) {
   const [step, setStep] = useState(1);
@@ -32,12 +35,41 @@ export default function FoundItemDialog({ open, setOpen }) {
     setStep(2);
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log("Final Form Data:", formData);
-    setOpen(false);
-    setStep(1);
+  
+    const payload = {
+      itemType: formData.itemName,
+      description: formData.description,
+      category: formData.category,
+      finderName: "Ritesh Hooda", // replace later with user input or auth
+      finderPhone: "9876543210",
+      finderEmail: "ritesh@example.com",
+      verificationQuestions: formData.questions.map((q) => ({ question: q })),
+    };
+  
+    try {
+      const res = await axios.post("http://localhost:5000/api/found", payload);
+  
+      if (res.status === 201) {
+        toast.success("Item submitted successfully!");
+  
+        setFormData({
+          itemName: "",
+          description: "",
+          category: "",
+          questions: ["", "", ""],
+        });
+  
+        setStep(1);
+        setOpen(false);
+      }
+    } catch (error) {
+      console.error("Error submitting item:", error);
+      toast.error(error?.response?.data?.message || "Failed to submit item");
+    }
   }
+  
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -83,7 +115,7 @@ export default function FoundItemDialog({ open, setOpen }) {
               <div>
                 <label className="block font-medium mb-1">Select Category</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {["brand", "stationary", "responsive", "jewelry", "diet"].map((img, idx) => (
+                  {["brand", "stationary", "gadgetgit", "jewelry", "diet"].map((img, idx) => (
                     <button
                       key={idx}
                       type="button"
