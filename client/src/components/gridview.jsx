@@ -4,20 +4,20 @@ import ViewDetailsModal from '../Modals/ViewDetailsModal';
 
 const Gridview = () => {
   const [items, setItems] = useState([]);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL; // ✅ access env variable
 
   useEffect(() => {
-    // Fetch data from backend when component mounts
     const fetchItems = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/found");
-        setItems(res.data); // res.data is the array of items
+        const res = await axios.get(`${backendUrl}/api/found`);
+        setItems(res.data);
       } catch (err) {
         console.error("Failed to fetch items:", err);
       }
     };
 
     fetchItems();
-  }, []);
+  }, [backendUrl]);
 
   return (
     <div className="p-6 bg-gray-100 min-h-[70vh]">
@@ -30,7 +30,7 @@ const Gridview = () => {
             className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-2xl hover:scale-105"
           >
             <img
-              src={`/${getImageByCategory(item.category)}`} // Dynamically set image based on category
+              src={`/${getImageByCategory(item.category)}`}
               alt={item.itemType}
               className="w-16 h-16 object-cover rounded-sm mb-4 border-2 border-[#284B63]"
             />
@@ -48,14 +48,13 @@ const Gridview = () => {
   );
 };
 
-// Helper to choose image by category
 function getImageByCategory(category) {
   const map = {
     Jewelry: "jewelry.png",
     Stationary: "stationary.png",
-    Electronics: "gadget.png",
-    Clothes: "brand.png",
-    "Bottles&Tiffin": "diet.png",
+    Electronics: "electronics.png",
+    Clothes: "clothes.png",
+    "Bottles&Tiffin": "bottles&tiffin.png",
   };
   return map[category] || "default.png";
 }
