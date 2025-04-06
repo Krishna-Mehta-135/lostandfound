@@ -10,7 +10,7 @@ const App = () => {
     <>
     <Navbar/>
      <Homepage/>
-      <Gridview/>
+    
       <Footer></Footer>
       
    
