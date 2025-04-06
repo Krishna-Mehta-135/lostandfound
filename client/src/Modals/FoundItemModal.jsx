@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
-import { toast } from "sonner"; // Optional, for feedback messages
+import { toast } from "sonner"; 
 
 
 export default function FoundItemDialog({ open, setOpen }) {
@@ -42,14 +42,14 @@ export default function FoundItemDialog({ open, setOpen }) {
       itemType: formData.itemName,
       description: formData.description,
       category: formData.category,
-      finderName: "Ritesh Hooda", // replace later with user input or auth
+      finderName: "Ritesh Hooda", 
       finderPhone: "9876543210",
       finderEmail: "ritesh@example.com",
-      verificationQuestions: formData.questions.map((q) => ({ question: q })),
+      verificationQuestions: formData.questions,
     };
   
     try {
-      const res = await axios.post("http://localhost:5000/api/found", payload);
+      const res = await axios.post("http://localhost:5000/api/v1/foundItems/create", payload);
   
       if (res.status === 201) {
         toast.success("Item submitted successfully!");
@@ -115,7 +115,7 @@ export default function FoundItemDialog({ open, setOpen }) {
               <div>
                 <label className="block font-medium mb-1">Select Category</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {["brand", "stationary", "gadgetgit", "jewelry", "diet"].map((img, idx) => (
+                  {["brand", "stationary", "gadget", "jewelry", "diet"].map((img, idx) => (
                     <button
                       key={idx}
                       type="button"
