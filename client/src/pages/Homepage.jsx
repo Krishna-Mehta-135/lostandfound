@@ -36,7 +36,7 @@ const Homepage = () => {
         {/* Found Item Button */}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[80%] sm:w-[60%] md:w-[40%] bg-[#F97316] hover:bg-[#EA580C] text-black py-3 rounded-md font-semibold text-sm sm:text-base"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 transform sm:w-[60%] md:w-[40%] bg-[#F97316] hover:bg-[#EA580C] text-black py-3 rounded-md font-semibold text-sm sm:text-base"
         >
           Found an item? Tell us here...
         </button>
