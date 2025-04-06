@@ -51,11 +51,7 @@ export default function FoundItemDialog({ open, setOpen }) {
     };
 
     try {
-<<<<<<< HEAD
       const res = await axios.post("http://localhost:9898/api/v1/foundItems/create", payload);
-=======
-      const res = await axios.post("http://localhost:5000/api/v1/foundItems/create", payload);
->>>>>>> 0db75cbf86dae4d53a3f82849321201726f2d7f0
 
       if (res.status === 201) {
         toast.success("Item submitted successfully!");
