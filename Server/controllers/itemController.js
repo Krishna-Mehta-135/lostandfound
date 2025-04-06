@@ -1,10 +1,10 @@
 import FoundItem from "../models/items.models.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
-import asyncHandler from "../utils/asyncHandler.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
 import moment from "moment";
 
 // ✅ Get all unclaimed found items
-export const getAllFoundItems = asyncHandler(async (req, res) => {
+const getAllFoundItems = asyncHandler(async (req, res) => {
     try {
         const items = await FoundItem.find({isClaimed: false}, "itemType _id createdAt category").sort({
             createdAt: -1,
@@ -24,7 +24,7 @@ export const getAllFoundItems = asyncHandler(async (req, res) => {
 });
 
 // ✅ Create a new found item
-export const createFoundItem = asyncHandler(async (req, res) => {
+const createFoundItem = asyncHandler(async (req, res) => {
     try {
         const {itemType, description, category, finderName, finderPhone, finderEmail, verificationQuestions} = req.body;
 
@@ -65,3 +65,7 @@ export const createFoundItem = asyncHandler(async (req, res) => {
     }
 });
 
+export{
+    getAllFoundItems,
+    createFoundItem
+}
