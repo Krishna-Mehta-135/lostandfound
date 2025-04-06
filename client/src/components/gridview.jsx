@@ -4,20 +4,20 @@ import ViewDetailsModal from '../Modals/ViewDetailsModal';
 
 const Gridview = () => {
   const [items, setItems] = useState([]);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL; // ✅ access env variable
+  
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/found`);
-        setItems(res.data);
+        const res = await axios.get("http://localhost:9898/api/v1/foundItems");
+        setItems(res.data.data);
       } catch (err) {
         console.error("Failed to fetch items:", err);
       }
     };
 
     fetchItems();
-  }, [backendUrl]);
+  },[]);
 
   return (
     <div className="p-6 bg-gray-100 min-h-[70vh]">
