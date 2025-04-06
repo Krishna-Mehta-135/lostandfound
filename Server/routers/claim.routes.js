@@ -1,18 +1,11 @@
 import express from "express";
-import {
-    submitClaim,
-    getClaimsForFinder,
-    approveClaim,
-    rejectClaim,
-    getClaimsForItem, // make sure it's imported
-} from "../controllers/claim.controller.js";
+import {createClaim, getClaimsForItem, approveClaim, rejectClaim} from "../controllers/claim.controller.js";
 
-const router = express.Router();
+const claimRouter = express.Router();
 
-router.post("/submit", submitClaim);
-router.get("/finder/:email", getClaimsForFinder);
-router.get("/item/:itemId", getClaimsForItem); // 🔥 NEW ROUTE
-router.post("/approve/:claimId", approveClaim);
-router.post("/reject/:claimId", rejectClaim);
+claimRouter.post("/submit", createClaim); // ✅ route is still /submit
+claimRouter.get("/item/:itemId", getClaimsForItem);
+claimRouter.post("/approve/:claimId", approveClaim);
+claimRouter.post("/reject/:claimId", rejectClaim);
 
-export default router;
+export default claimRouter;

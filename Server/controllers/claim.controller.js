@@ -1,7 +1,7 @@
-import asyncHandler from "../utils/asyncHandler.js";
-import Claim from "../models/claim.model.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
+import Claim from "../models/claim.models.js";
 import FoundItem from "../models/items.models.js";
-import ApiResponse from "../utils/ApiResponse.js";
+import {ApiResponse} from "../utils/ApiResponse.js";
 import sendEmail from "../utils/sendEmail.js";
 
 // Create a claim for an item
