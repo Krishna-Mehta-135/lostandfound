@@ -9,12 +9,13 @@ const Gridview = () => {
     // Fetch data from backend when component mounts
     const fetchItems = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/found");
-        setItems(res.data); // res.data is the array of items
+        const res = await axios.get("http://localhost:9898/api/v1/foundItems");
+        setItems(res.data.data); // FIXED
       } catch (err) {
         console.error("Failed to fetch items:", err);
       }
     };
+    ;
 
     fetchItems();
   }, []);
