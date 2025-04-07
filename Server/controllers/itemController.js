@@ -1,12 +1,12 @@
 import FoundItem from "../models/items.models.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import {ApiResponse} from "../utils/ApiResponse.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
 import moment from "moment";
 
 // ✅ Get all unclaimed found items
 const getAllFoundItems = asyncHandler(async (req, res) => {
     try {
-        const items = await FoundItem.find({ isClaimed: false }, "itemType _id createdAt category").sort({
+        const items = await FoundItem.find({isClaimed: false}, "itemType _id createdAt category").sort({
             createdAt: -1,
         });
 
@@ -26,15 +26,7 @@ const getAllFoundItems = asyncHandler(async (req, res) => {
 // ✅ Create a new found item
 const createFoundItem = asyncHandler(async (req, res) => {
     try {
-        const {
-            itemType,
-            description,
-            category,
-            finderName,
-            finderPhone,
-            finderEmail,
-            verificationQuestions,
-        } = req.body;
+        const {itemType, description, category, finderName, finderPhone, finderEmail, verificationQuestions} = req.body;
 
         if (
             !itemType ||
@@ -47,12 +39,14 @@ const createFoundItem = asyncHandler(async (req, res) => {
             verificationQuestions.length < 3 ||
             verificationQuestions.length > 5
         ) {
-            return res.status(400).json(
+            return res
+            .status(400)
+            .json(
                 new ApiResponse(400, null, "All fields are required and 3 to 5 verification questions must be provided")
             );
         }
 
-        const formattedQuestions = verificationQuestions.map((q) => ({ question: q }));
+        const formattedQuestions = verificationQuestions.map((q) => ({question: q}));
 
         const newItem = await FoundItem.create({
             itemType,
@@ -62,6 +56,7 @@ const createFoundItem = asyncHandler(async (req, res) => {
             finderPhone,
             finderEmail,
             verificationQuestions: formattedQuestions,
+            createdBy: req.user._id, // ✅ This links the item to the logged-in user
         });
 
         return res.status(201).json(new ApiResponse(201, newItem, "Found item created successfully"));
@@ -73,7 +68,7 @@ const createFoundItem = asyncHandler(async (req, res) => {
 
 // ✅ Get a single found item by ID
 const getFoundItemById = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const {id} = req.params;
 
     const item = await FoundItem.findById(id);
     if (!item) {
@@ -83,8 +78,15 @@ const getFoundItemById = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, item, "Item fetched successfully"));
 });
 
+const getMyFoundItems = asyncHandler(async (req,res) => {
+    const myItems = FoundItem.find({ createdBy : req.user._id}).sort({ createdAt : -1});
+
+    res.status(200).json(new ApiResponse(200, myItems, "Your found items fetched successfully"));
+})
+
 export {
     getAllFoundItems,
     createFoundItem,
     getFoundItemById, // 🆕 make sure this is exported
+    getMyFoundItems 
 };

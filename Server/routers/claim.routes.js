@@ -1,11 +1,14 @@
-import express from "express";
-import {createClaim, getClaimsForItem, approveClaim, rejectClaim} from "../controllers/claim.controller.js";
+import {Router} from "express";
+import {createClaim, getClaimsForItems, approveClaim, rejectClaim} from "../controllers/claim.controller.js";
+import {protect} from "../middleware/auth.middleware.js";
 
-const claimRouter = express.Router();
+const claimRouter = Router();
 
-claimRouter.post("/submit", createClaim); // ✅ route is still /submit
-claimRouter.get("/item/:itemId", getClaimsForItem);
-claimRouter.post("/approve/:claimId", approveClaim);
-claimRouter.post("/reject/:claimId", rejectClaim);
+claimRouter.use(protect); // protect everything below
 
-export default claimRouter;
+claimRouter.route("/create").post(createClaim); // create a claim
+claimRouter.route("/:itemId").get(getClaimsForItems); //get all the claims submitted on a particular item
+claimRouter.route("/approve/:claimId").post(approveClaim);
+claimRouter.route("/reject/:claimId").post(rejectClaim);
+
+export {claimRouter};
