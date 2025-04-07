@@ -1,22 +1,50 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Register() {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate(); // for redirect
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setMessage("");
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: connect to backend API
-    console.log(formData);
+
+    try {
+      const response = await axios.post("http://localhost:9898/api/v1/auth/register", formData);
+      setMessage(response.data.message || "Registration successful");
+      setFormData({ name: "", email: "", password: "" });
+
+      // Delay for 1 second to show success message before redirect
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+
+    } catch (err) {
+      console.error(err);
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Something went wrong. Try again.";
+      setError(msg);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1a2a3a]">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-sm shadow-xl w-96 space-y-4">
         <h2 className="text-2xl font-bold text-center text-[#1a2a3a]">Create an Account</h2>
+
+        {message && <p className="text-green-600 text-sm text-center">{message}</p>}
+        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+
         <input
           type="text"
           name="name"

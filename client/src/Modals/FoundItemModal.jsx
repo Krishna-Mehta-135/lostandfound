@@ -39,7 +39,7 @@ export default function FoundItemDialog({ open, setOpen }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
+  
     const payload = {
       itemType: formData.itemName,
       description: formData.description,
@@ -49,10 +49,20 @@ export default function FoundItemDialog({ open, setOpen }) {
       finderEmail: formData.finderEmail,
       verificationQuestions: formData.questions,
     };
-
+  
+    const token = localStorage.getItem("token");
+  
     try {
-      const res = await axios.post("http://localhost:9898/api/v1/foundItems/create", payload);
-
+      const res = await axios.post(
+        "http://localhost:9898/api/v1/foundItems/create",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
       if (res.status === 201) {
         toast.success("Item submitted successfully!");
         setFormData({
@@ -72,6 +82,7 @@ export default function FoundItemDialog({ open, setOpen }) {
       toast.error(error?.response?.data?.message || "Failed to submit item");
     }
   }
+  
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

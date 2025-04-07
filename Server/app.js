@@ -15,14 +15,13 @@ const app = express();
 
 // CORS Configuration
 app.use(
-    cors({
-      origin: "http://localhost:5173",
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type"],
-      credentials:false,
-    })
-  );
-  
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 // Handle Preflight OPTIONS request
 
 app.use(express.json());

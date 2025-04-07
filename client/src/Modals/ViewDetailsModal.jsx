@@ -13,11 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 const ViewDetailsDialog = ({ item }) => {
-
   const IItem = item?.item ?? item;
   const itemId = IItem?._id || IItem?.id;
-
-  console.log("Actual item ID to fetch:", itemId);
 
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
@@ -30,9 +27,16 @@ const ViewDetailsDialog = ({ item }) => {
   const fetchItem = async () => {
     if (!itemId) return;
     setLoading(true);
+
     try {
-      const res = await axios.get(`http://localhost:9898/api/v1/foundItems/${itemId}`);
-      console.log("Fetched item from API:", res.data);
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(`http://localhost:9898/api/v1/foundItems/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // 🔐 Send token
+        },
+      });
+
       setFetchedItem(res.data.data);
       setAnswers(new Array(res.data.data.verificationQuestions.length).fill(""));
     } catch (err) {
@@ -60,17 +64,27 @@ const ViewDetailsDialog = ({ item }) => {
 
   const handleSubmit = async () => {
     try {
+      const token = localStorage.getItem("token");
+
       const formattedAnswers = fetchedItem.verificationQuestions.map((q, i) => ({
         question: q.question,
         answer: answers[i],
       }));
 
-      await axios.post("http://localhost:9898/api/v1/claims/submit", {
-        itemId,
-        claimantName,
-        claimantEmail,
-        answers: formattedAnswers,
-      });
+      await axios.post(
+        "http://localhost:9898/api/v1/claims/submit",
+        {
+          itemId,
+          claimantName,
+          claimantEmail,
+          answers: formattedAnswers,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 🔐 Send token for POST
+          },
+        }
+      );
 
       alert("Claim submitted successfully!");
       setOpen(false);
@@ -104,12 +118,12 @@ const ViewDetailsDialog = ({ item }) => {
         ) : step === 1 ? (
           <div className="space-y-4">
             {fetchedItem.category && (
-           <img
-          src={`/${fetchedItem.category}.png`}
-           alt="Item"
-          className="w-24 h-24 object-cover rounded-sm mb-4 border-2 border-[#284B63] "
-          />
-           )}
+              <img
+                src={`/${fetchedItem.category.toLowerCase()}.png`}
+                alt="Item"
+                className="w-24 h-24 object-cover rounded-sm mb-4 border-2 border-[#284B63]"
+              />
+            )}
             <h2 className="text-xl font-bold">{fetchedItem.itemType}</h2>
             <p className="text-gray-600">{fetchedItem.description}</p>
 

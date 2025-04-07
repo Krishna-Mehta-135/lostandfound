@@ -8,10 +8,17 @@ const Gridview = ({ search = "" }) => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await axios.get("http://localhost:9898/api/v1/foundItems");
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get("http://localhost:9898/api/v1/foundItems", {
+          headers: {
+            Authorization: `Bearer ${token}`, // 👈 pass JWT here
+          },
+        });
+
         setItems(res.data.data);
       } catch (err) {
-        console.error("Failed to fetch items:", err);
+        console.error("❌ Failed to fetch items:", err);
       }
     };
 
@@ -53,7 +60,7 @@ const Gridview = ({ search = "" }) => {
               <p className="mt-2 text-gray-700">{item.description}</p>
 
               <div className="mt-4">
-              <ViewDetailsDialog item={item} />
+                <ViewDetailsDialog item={item} />
               </div>
             </div>
           ))
@@ -66,6 +73,5 @@ const Gridview = ({ search = "" }) => {
     </div>
   );
 };
-
 
 export default Gridview;

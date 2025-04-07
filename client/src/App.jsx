@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import MyItem from "./pages/MyItems"; // 👈 Import MyItem
 
 const App = () => {
   return (
@@ -20,7 +21,7 @@ const App = () => {
             <>
               <Navbar />
               <Homepage />
-              <Gridview />
+              
               <Footer />
             </>
           }
@@ -31,11 +32,21 @@ const App = () => {
 
         {/* Register Page */}
         <Route path="/register" element={<Register />} />
+
+        {/* My Items Page */}
+        <Route
+          path="/my-items"
+          element={
+            <>
+              <Navbar />
+              <MyItem />
+              <Footer />
+            </>
+          }
+        />
       </Routes>
     </Router>
   );
 };
 
 export default App;
-
- 
