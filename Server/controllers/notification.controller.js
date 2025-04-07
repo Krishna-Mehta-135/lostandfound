@@ -1,4 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
+import NotificationRequest from "../models/notificationRequest.models.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+
 
 export const requestNotification = asyncHandler(async (req, res) => {
     const { category } = req.body;
