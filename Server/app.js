@@ -6,10 +6,10 @@ dotenv.config({
 import cors from "cors";
 import express from "express";
 
-import claimRouter from "./routers/claim.routes.js";
+import {claimRouter} from "./routers/claim.routes.js";
 import { itemsRouter } from "./routers/foundItems.routes.js";
 import authRoutes from "./routers/auth.routes.js";
-import { notificationRouter } from "./router/notification.router.js";
+import { notificationRouter } from "./routers/notification.routes.js";
 
 const app = express();
 

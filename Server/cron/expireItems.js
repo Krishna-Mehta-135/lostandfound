@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import FoundItem from "../models/Items.model.js";
+import FoundItem from "../models/items.models.js";
 
 export const scheduleItemExpiryJob = () => {
     cron.schedule("0 0 * * *", async () => {
