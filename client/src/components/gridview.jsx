@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import ViewDetailsModal from "../Modals/ViewDetailsModal";
+import ViewDetailsDialog from "../Modals/ViewDetailsModal";
 
 const Gridview = ({ search = "" }) => {
   const [items, setItems] = useState([]);
@@ -53,7 +53,7 @@ const Gridview = ({ search = "" }) => {
               <p className="mt-2 text-gray-700">{item.description}</p>
 
               <div className="mt-4">
-                <ViewDetailsModal item={item} />
+              <ViewDetailsDialog item={item} />
               </div>
             </div>
           ))
