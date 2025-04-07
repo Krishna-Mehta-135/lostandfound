@@ -57,6 +57,10 @@ const foundItemSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+        isExpired: {
+            type: Boolean,
+            default: false,
+        },
     },
     {timestamps: true}
 );
