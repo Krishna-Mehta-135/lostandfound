@@ -3,7 +3,7 @@ import {ApiResponse} from "../utils/ApiResponse.js";
 import {asyncHandler} from "../utils/asyncHandler.js";
 import moment from "moment";
 import NotificationRequest from "../models/notificationRequest.models.js";
-import sendEmail from "../utils/sendEmail.js";
+import {sendEmail} from "../utils/sendEmail.js";
 
 // ✅ Get all unclaimed found items
 const getAllFoundItems = asyncHandler(async (req, res) => {
@@ -62,16 +62,21 @@ const createFoundItem = asyncHandler(async (req, res) => {
         });
 
         // 🔔 Notify users who requested notification for this category
-        const matchingUsers = await NotificationRequest.find({
-            category,
-            notified: false,
-        });
+        const matchingUsers = await NotificationRequest.find({category, notified: false});
 
         for (const user of matchingUsers) {
             await sendEmail({
                 to: user.email,
                 subject: `A new ${itemType} was reported found!`,
-                text: `Hello! A new ${category} item just got added on the lost & found portal. Go check it out to see if it's yours!`,
+                text: `Hello!\n\nA new ${category} item was just added on the Lost & Found portal.\nGo check it out to see if it might be yours.`,
+                html: `
+                    <div style="font-family: sans-serif;">
+                        <h2>A new <span style="color: #6366F1;">${itemType}</span> was reported found!</h2>
+                        <p>Category: <strong>${category}</strong></p>
+                        <p>Go check the Lost & Found portal to see if it's yours.</p>
+                        <p style="margin-top: 1rem;">Regards,<br>Lost & Found Team</p>
+                    </div>
+                `,
             });
 
             user.notified = true;
@@ -97,15 +102,11 @@ const getFoundItemById = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, item, "Item fetched successfully"));
 });
 
+// ✅ Get all items created by the current user
 const getMyFoundItems = asyncHandler(async (req, res) => {
-    const myItems = FoundItem.find({createdBy: req.user._id}).sort({createdAt: -1});
+    const myItems = await FoundItem.find({createdBy: req.user._id}).sort({createdAt: -1});
 
     res.status(200).json(new ApiResponse(200, myItems, "Your found items fetched successfully"));
 });
 
-export {
-    getAllFoundItems,
-    createFoundItem,
-    getFoundItemById, //  make sure this is exported
-    getMyFoundItems,
-};
+export {getAllFoundItems, createFoundItem, getFoundItemById, getMyFoundItems};
