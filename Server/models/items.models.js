@@ -24,7 +24,7 @@ const foundItemSchema = new mongoose.Schema(
         category: {
             type: String,
             required: true,
-            enum: ["Jewelry", "Clothes", "Electronics", "Stationary", "Bottles&Tiffin"]
+            enum: ["Jewelry", "Clothes", "Electronics", "Stationary", "Bottles&Tiffin"],
         },
         finderName: {
             type: String,
@@ -35,8 +35,8 @@ const foundItemSchema = new mongoose.Schema(
             required: true,
         },
         finderEmail: {
-            type : String,
-            required : true
+            type: String,
+            required: true,
         },
         verificationQuestions: {
             type: [verificationQuestionSchema],
@@ -51,6 +51,11 @@ const foundItemSchema = new mongoose.Schema(
         isClaimed: {
             type: Boolean,
             default: false,
+        },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
         },
     },
     {timestamps: true}

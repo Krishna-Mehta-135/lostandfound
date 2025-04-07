@@ -17,6 +17,15 @@ export const createClaim = asyncHandler(async (req, res) => {
         return res.status(404).json(new ApiResponse(404, null, "Item not found"));
     }
 
+    // ❗ Check for existing claim by this email for this item
+    const existingClaim = await Claim.findOne({ itemId, claimantEmail });
+
+    if (existingClaim) {
+        return res.status(400).json(
+            new ApiResponse(400, null, "You have already submitted a claim for this item")
+        );
+    }
+
     const claim = await Claim.create({
         itemId,
         claimantName,
@@ -26,6 +35,7 @@ export const createClaim = asyncHandler(async (req, res) => {
 
     return res.status(201).json(new ApiResponse(201, claim, "Claim submitted successfully"));
 });
+
 
 // Get all claims for a specific item
 export const getClaimsForItem = asyncHandler(async (req, res) => {

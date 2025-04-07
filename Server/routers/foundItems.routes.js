@@ -2,13 +2,18 @@ import { Router } from "express";
 import {
     createFoundItem,
     getAllFoundItems,
-    getFoundItemById // ✅ don't forget to import
+    getFoundItemById
 } from "../controllers/itemController.js";
+
+import { protect } from "../middlewares/auth.middleware.js";
 
 const itemsRouter = Router();
 
-itemsRouter.route("/").get(getAllFoundItems);
-itemsRouter.route("/create").post(createFoundItem);
-itemsRouter.route("/:id").get(getFoundItemById); // ✅ route to fetch one item
+// 🔒 All routes protected
+itemsRouter.route("/").get(protect, getAllFoundItems);
+itemsRouter.route("/create").post(protect, createFoundItem);
+itemsRouter.route("/:id").get(protect, getFoundItemById);
+
+itemsRouter.route("/my").get(protect, getMyFoundItems); // get the finders submitted items on his dashboard
 
 export { itemsRouter };
