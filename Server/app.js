@@ -8,6 +8,8 @@ import express from "express";
 
 import claimRouter from "./routers/claim.routes.js";
 import { itemsRouter } from "./routers/foundItems.routes.js";
+import authRoutes from "./routers/auth.routes.js";
+
 
 const app = express();
 
@@ -28,5 +30,8 @@ app.use(express.json());
 // Routes
 app.use("/api/v1/foundItems", itemsRouter);
 app.use("/api/v1/claims", claimRouter);
+
+app.use("/api/v1/auth", authRoutes);
+
 
 export { app };
