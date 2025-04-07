@@ -2,6 +2,8 @@ import FoundItem from "../models/items.models.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import {asyncHandler} from "../utils/asyncHandler.js";
 import moment from "moment";
+import NotificationRequest from "../models/notificationRequest.models.js";
+import sendEmail from "../utils/sendEmail.js";
 
 // ✅ Get all unclaimed found items
 const getAllFoundItems = asyncHandler(async (req, res) => {
@@ -56,8 +58,25 @@ const createFoundItem = asyncHandler(async (req, res) => {
             finderPhone,
             finderEmail,
             verificationQuestions: formattedQuestions,
-            createdBy: req.user._id, // ✅ This links the item to the logged-in user
+            createdBy: req.user._id,
         });
+
+        // 🔔 Notify users who requested notification for this category
+        const matchingUsers = await NotificationRequest.find({
+            category,
+            notified: false,
+        });
+
+        for (const user of matchingUsers) {
+            await sendEmail({
+                to: user.email,
+                subject: `A new ${itemType} was reported found!`,
+                text: `Hello! A new ${category} item just got added on the lost & found portal. Go check it out to see if it's yours!`,
+            });
+
+            user.notified = true;
+            await user.save();
+        }
 
         return res.status(201).json(new ApiResponse(201, newItem, "Found item created successfully"));
     } catch (error) {
@@ -78,15 +97,15 @@ const getFoundItemById = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, item, "Item fetched successfully"));
 });
 
-const getMyFoundItems = asyncHandler(async (req,res) => {
-    const myItems = FoundItem.find({ createdBy : req.user._id}).sort({ createdAt : -1});
+const getMyFoundItems = asyncHandler(async (req, res) => {
+    const myItems = FoundItem.find({createdBy: req.user._id}).sort({createdAt: -1});
 
     res.status(200).json(new ApiResponse(200, myItems, "Your found items fetched successfully"));
-})
+});
 
 export {
     getAllFoundItems,
     createFoundItem,
-    getFoundItemById, // 🆕 make sure this is exported
-    getMyFoundItems 
+    getFoundItemById, //  make sure this is exported
+    getMyFoundItems,
 };

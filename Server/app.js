@@ -9,7 +9,7 @@ import express from "express";
 import claimRouter from "./routers/claim.routes.js";
 import { itemsRouter } from "./routers/foundItems.routes.js";
 import authRoutes from "./routers/auth.routes.js";
-
+import { notificationRouter } from "./router/notification.router.js";
 
 const app = express();
 
@@ -32,6 +32,8 @@ app.use("/api/v1/foundItems", itemsRouter);
 app.use("/api/v1/claims", claimRouter);
 
 app.use("/api/v1/auth", authRoutes);
+
+app.use("/api/v1/notifications", notificationRouter);
 
 
 export { app };
