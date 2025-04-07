@@ -65,7 +65,7 @@ const ViewDetailsDialog = ({ item }) => {
         answer: answers[i],
       }));
 
-      await axios.post("http://localhost:9898/api/claims/submit", {
+      await axios.post("http://localhost:9898/api/v1/claims/submit", {
         itemId,
         claimantName,
         claimantEmail,
@@ -103,6 +103,13 @@ const ViewDetailsDialog = ({ item }) => {
           <p className="text-center text-red-500">No item data found.</p>
         ) : step === 1 ? (
           <div className="space-y-4">
+            {fetchedItem.category && (
+           <img
+          src={`/${fetchedItem.category}.png`}
+           alt="Item"
+          className="w-24 h-24 object-cover rounded-sm mb-4 border-2 border-[#284B63] "
+          />
+           )}
             <h2 className="text-xl font-bold">{fetchedItem.itemType}</h2>
             <p className="text-gray-600">{fetchedItem.description}</p>
 
