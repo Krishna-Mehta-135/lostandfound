@@ -1,3 +1,5 @@
+import { asyncHandler } from "../utils/asyncHandler.js";
+
 export const requestNotification = asyncHandler(async (req, res) => {
     const { category } = req.body;
     const email = req.user.email;

@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
     createFoundItem,
     getAllFoundItems,
-    getFoundItemById
+    getFoundItemById,
+    getMyFoundItems
 } from "../controllers/itemController.js";
 
 import { protect } from "../middlewares/auth.middleware.js";
