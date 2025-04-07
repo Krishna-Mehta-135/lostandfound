@@ -124,7 +124,11 @@ export default function FoundItemDialog({ open, setOpen }) {
                       onClick={() => setFormData({ ...formData, category: img })}
                       className={`border p-2 rounded ${formData.category === img ? "bg-orange-100 border-orange-500" : ""}`}
                     >
-                      <img src={`/${img}.png`} alt={img} className="w-16 h-16 mx-auto object-contain" />
+                      <img
+                        src={`/${img.toLowerCase()}.png`}
+                        alt={img}
+                        className="w-16 h-16 mx-auto object-contain"
+                      />
                     </button>
                   ))}
                 </div>
