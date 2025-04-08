@@ -40,7 +40,6 @@ const ViewDetailsDialog = ({ item }) => {
       setFetchedItem(res.data.data);
       setAnswers(new Array(res.data.data.verificationQuestions.length).fill(""));
     } catch {
-      // Optional: show a user-friendly error alert
     } finally {
       setLoading(false);
     }
