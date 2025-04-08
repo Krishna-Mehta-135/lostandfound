@@ -33,14 +33,14 @@ const ViewDetailsDialog = ({ item }) => {
 
       const res = await axios.get(`http://localhost:9898/api/v1/foundItems/${itemId}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // 🔐 Send token
+          Authorization: `Bearer ${token}`,
         },
       });
 
       setFetchedItem(res.data.data);
       setAnswers(new Array(res.data.data.verificationQuestions.length).fill(""));
-    } catch (err) {
-      console.error("Error fetching item:", err);
+    } catch {
+      // Optional: show a user-friendly error alert
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ const ViewDetailsDialog = ({ item }) => {
       }));
 
       await axios.post(
-        "http://localhost:9898/api/v1/claims/submit",
+        "http://localhost:9898/api/v1/claims/create",
         {
           itemId,
           claimantName,
@@ -81,15 +81,14 @@ const ViewDetailsDialog = ({ item }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // 🔐 Send token for POST
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       alert("Claim submitted successfully!");
       setOpen(false);
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert("Failed to submit claim.");
     }
   };

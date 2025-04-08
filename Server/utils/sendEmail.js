@@ -35,9 +35,11 @@ export const sendEmail = async ({ to, subject, text, html }) => {
             text,
             html,
         });
+        console.log(`✅ Email sent to ${to} with subject: "${subject}"`);
     } catch (error) {
-        console.error("❌ Error sending email:", error.message);
-        throw error;
+        console.error("❌ Error sending email:");
+        console.error(error); // Log the full error object
+        throw error; // Re-throw to trigger 500 in route
     }
 };
 

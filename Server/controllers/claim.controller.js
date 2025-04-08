@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import Claim from "../models/claim.models.js";
 import FoundItem from "../models/items.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {sendEmail} from "../utils/sendEmail.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 // Create a claim for an item
 export const createClaim = asyncHandler(async (req, res) => {
@@ -17,9 +17,7 @@ export const createClaim = asyncHandler(async (req, res) => {
         return res.status(404).json(new ApiResponse(404, null, "Item not found"));
     }
 
-    // ❗ Check for existing claim by this email for this item
     const existingClaim = await Claim.findOne({ itemId, claimantEmail });
-
     if (existingClaim) {
         return res.status(400).json(
             new ApiResponse(400, null, "You have already submitted a claim for this item")
@@ -35,7 +33,6 @@ export const createClaim = asyncHandler(async (req, res) => {
 
     return res.status(201).json(new ApiResponse(201, claim, "Claim submitted successfully"));
 });
-
 
 // Get all claims for a specific item
 export const getClaimsForItem = asyncHandler(async (req, res) => {
@@ -60,11 +57,9 @@ export const approveClaim = asyncHandler(async (req, res) => {
         return res.status(404).json(new ApiResponse(404, null, "Claim not found"));
     }
 
-    // Update claim status
     claim.status = "approved";
     await claim.save();
 
-    // Mark item as claimed
     const item = await FoundItem.findById(claim.itemId);
     if (!item) {
         return res.status(404).json(new ApiResponse(404, null, "Item not found"));
@@ -73,11 +68,11 @@ export const approveClaim = asyncHandler(async (req, res) => {
     item.isClaimed = true;
     await item.save();
 
-    // Send approval email
-    await sendEmail(
-        claim.claimantEmail,
-        "Claim Approved – Lost & Found",
-        `Hi ${claim.claimantName},
+    try {
+        await sendEmail(
+            claim.claimantEmail,
+            "Claim Approved – Lost & Found",
+            `Hi ${claim.claimantName},
 
 Your claim for the item "${item.itemType}" has been approved!
 
@@ -90,7 +85,10 @@ Phone: ${item.finderPhone}
 Please get in touch with them to retrieve your item.
 
 – Team Lost & Found`
-    );
+        );
+    } catch (error) {
+        return res.status(500).json(new ApiResponse(500, null, "Failed to send approval email"));
+    }
 
     return res.status(200).json(new ApiResponse(200, null, "Claim approved and email sent."));
 });
@@ -99,20 +97,18 @@ Please get in touch with them to retrieve your item.
 export const rejectClaim = asyncHandler(async (req, res) => {
     const { claimId } = req.params;
 
-    // Step 1: Find the claim
     const claim = await Claim.findById(claimId);
     if (!claim) {
         return res.status(404).json(new ApiResponse(404, null, "Claim not found"));
     }
 
-    // Step 2: Get the associated item
     const item = await FoundItem.findById(claim.itemId);
 
-    // Step 3: Prepare and send rejection email
-    await sendEmail(
-        claim.claimantEmail,
-        "Claim Rejected – Lost & Found",
-        `Hi ${claim.claimantName},
+    try {
+        await sendEmail(
+            claim.claimantEmail,
+            "Claim Rejected – Lost & Found",
+            `Hi ${claim.claimantName},
 
 Thank you for submitting your claim for the item "${item?.itemType ?? "Unknown"}".
 
@@ -121,12 +117,13 @@ After reviewing your answers, the finder was unable to confirm a match, so your 
 You're welcome to continue browsing the Lost & Found board in case someone else has reported your item.
 
 – Team Lost & Found`
-    );
+        );
+    } catch (error) {
+        return res.status(500).json(new ApiResponse(500, null, "Failed to send rejection email"));
+    }
 
-    // Step 4: Update claim status to rejected
     claim.status = "rejected";
     await claim.save();
 
-    // Step 5: Respond to client
     return res.status(200).json(new ApiResponse(200, null, "Claim rejected and email sent."));
 });
