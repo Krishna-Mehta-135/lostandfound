@@ -69,10 +69,10 @@ export const approveClaim = asyncHandler(async (req, res) => {
     await item.save();
 
     try {
-        await sendEmail(
-            claim.claimantEmail,
-            "Claim Approved – Lost & Found",
-            `Hi ${claim.claimantName},
+        await sendEmail({
+            to: claim.claimantEmail,
+            subject: "Claim Approved – Lost & Found",
+            text: `Hi ${claim.claimantName},
 
 Your claim for the item "${item.itemType}" has been approved!
 
@@ -84,8 +84,8 @@ Phone: ${item.finderPhone}
 
 Please get in touch with them to retrieve your item.
 
-– Team Lost & Found`
-        );
+– Team Lost & Found`,
+        });
     } catch (error) {
         return res.status(500).json(new ApiResponse(500, null, "Failed to send approval email"));
     }
@@ -105,10 +105,10 @@ export const rejectClaim = asyncHandler(async (req, res) => {
     const item = await FoundItem.findById(claim.itemId);
 
     try {
-        await sendEmail(
-            claim.claimantEmail,
-            "Claim Rejected – Lost & Found",
-            `Hi ${claim.claimantName},
+        await sendEmail({
+            to: claim.claimantEmail,
+            subject: "Claim Rejected – Lost & Found",
+            text: `Hi ${claim.claimantName},
 
 Thank you for submitting your claim for the item "${item?.itemType ?? "Unknown"}".
 
@@ -116,8 +116,8 @@ After reviewing your answers, the finder was unable to confirm a match, so your 
 
 You're welcome to continue browsing the Lost & Found board in case someone else has reported your item.
 
-– Team Lost & Found`
-        );
+– Team Lost & Found`,
+        });
     } catch (error) {
         return res.status(500).json(new ApiResponse(500, null, "Failed to send rejection email"));
     }
